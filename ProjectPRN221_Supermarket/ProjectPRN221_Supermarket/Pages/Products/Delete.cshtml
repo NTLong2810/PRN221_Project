@@ -1,0 +1,16 @@
+﻿@page
+@model ProjectPRN221_Supermarket.Pages.Products.DeleteModel
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+<h2>Delete Product</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Product.ProductId" />
+    <div class="form-group">
+        <label asp-for="Product.ProductName" class="control-label"></label>
+        <input asp-for="Product.ProductName" class="form-control" disabled />
+    </div>
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

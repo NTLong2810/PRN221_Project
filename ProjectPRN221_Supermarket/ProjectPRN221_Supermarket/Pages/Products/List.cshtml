@@ -44,12 +44,12 @@
         <div class="search-container">
             <div class="search-left">
                 <label for="productName">Product Name:</label>
-                <input type="text" id="productName" name="productName" />
+                <input type="text" id="productName" name="productName" asp-for="productName"/>
                 <button type="submit">Search</button>
             </div>
             <div class="search-right">
                 <label for="categoryId">Category:</label>
-                <select id="categoryId" name="categoryId" onchange="submitForm()">
+                <select id="categoryId" name="categoryId" onchange="submitForm()" asp-for="categoryId">
                     <option value="">All</option>
                     @foreach (var category in Model.Categories)
                     {
@@ -68,6 +68,7 @@
 				<th>Quantity</th>
 				<th>Expired Date</th>
 				<th>Category</th>
+                <th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -80,6 +81,10 @@
 				<td> @product.QuantityInStock</td>
 				<td> @product.ExpirationDate</td>
 				<td> @product.Category.CategoryName</td>
+                <td>
+                        <a asp-page="/Products/Edit" asp-route-id="@product.ProductId">Edit</a> |
+                        <a asp-page="/Products/Delete" asp-route-id="@product.ProductId">Delete</a>
+                </td>
 			</tr>
 		}
 		</tbody>

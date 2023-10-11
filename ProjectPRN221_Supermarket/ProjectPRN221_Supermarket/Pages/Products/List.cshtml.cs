@@ -12,8 +12,14 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         {
             _context = context;
         }
+        [BindProperty]
         public List<Product> Products { get; set; }
         public List<Category> Categories { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string productName { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public int? categoryId { get; set; }
         public void OnGet()
         {
             Products = _context.Products.Include(c => c.Category).ToList();

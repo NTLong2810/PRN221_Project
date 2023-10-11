@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN221_Supermarket.Models;
+using ProjectPRN221_Supermarket.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<SupermarketDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
+builder.Services.AddTransient<IProductRepository, ProductRepository>().AddDbContext<SupermarketDBContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
