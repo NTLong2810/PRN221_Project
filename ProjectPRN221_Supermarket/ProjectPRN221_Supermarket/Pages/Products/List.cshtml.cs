@@ -24,7 +24,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         public IList<Product> Product { get; set; } = default!;
         public async Task OnGet(int? pageIndex)
         {
-            var pageSize = 2; 
+            var pageSize = 4; 
             IQueryable<Product> products = _context.Products.Include(c => c.Category).AsNoTracking();
 
             Products = await PaginatedList<Product>.CreateAsync(
@@ -45,7 +45,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
                 query = query.Where(p => p.CategoryId == categoryId);
             }
 
-            Products = await PaginatedList<Product>.CreateAsync(query, 1, 2);
+            Products = await PaginatedList<Product>.CreateAsync(query, 1, 4);
             Categories = _context.Categories.ToList();
         }
     }

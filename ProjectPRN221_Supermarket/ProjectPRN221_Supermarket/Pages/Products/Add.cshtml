@@ -26,9 +26,10 @@
         <label asp-for="ExpirationDate" class="control-label"></label>
         <input asp-for="ExpirationDate" class="form-control" type="date" />
     </div>
+
     <div class="form-group">
         <label asp-for="Product.Category" class="control-label"></label>
-        <select asp-for="Product.Category" class="form-control">
+        <select asp-for="Product.CategoryId" class="form-control">
             <option value="">Select Category</option>
             @foreach (var category in Model.Categories)
             {
@@ -36,5 +37,22 @@
             }
         </select>
     </div>
+
+    <div class="form-group">
+        <label asp-for="SelectedSupplier" class="control-label">Select Supplier</label>
+        <select asp-for="SelectedSupplier" class="form-control">
+            <option value="">Select Supplier</option>
+            @foreach (var supplier in Model.Suppliers)
+            {
+                <option value="@supplier.SupplierId">@supplier.SupplierName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PurchaseOrderUnitPrice" class="control-label">Unit Price for Purchase Order</label>
+        <input asp-for="PurchaseOrderUnitPrice" class="form-control" />
+    </div>
+
     <button type="submit" class="btn btn-primary">Add</button>
 </form>
