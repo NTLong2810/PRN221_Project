@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN221_Supermarket.Models;
+using ProjectPRN221_Supermarket.Pages.Paging;
 
 namespace ProjectPRN221_Supermarket.Pages.Products
 {
@@ -13,20 +14,24 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             _context = context;
         }
         [BindProperty]
-        public List<Product> Products { get; set; }
+        public PaginatedList<Product> Products { get; set; }
         public List<Category> Categories { get; set; }
         [BindProperty(SupportsGet = true)]
         public string productName { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public int? categoryId { get; set; }
-        public void OnGet()
+        public IList<Product> Product { get; set; } = default!;
+        public async Task OnGet(int? pageIndex)
         {
-            Products = _context.Products.Include(c => c.Category).ToList();
+            var pageSize = 2; 
+            IQueryable<Product> products = _context.Products.Include(c => c.Category).AsNoTracking();
+
+            Products = await PaginatedList<Product>.CreateAsync(
+                products, pageIndex ?? 1, pageSize);
             Categories = _context.Categories.ToList();
         }
-
-        public void OnPost(string productName, int? categoryId)
+        public async Task OnPost(string productName, int? categoryId)
         {
             var query = _context.Products.Include(c => c.Category).AsQueryable();
 
@@ -40,7 +45,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
                 query = query.Where(p => p.CategoryId == categoryId);
             }
 
-            Products = query.ToList();
+            Products = await PaginatedList<Product>.CreateAsync(query, 1, 2);
             Categories = _context.Categories.ToList();
         }
     }

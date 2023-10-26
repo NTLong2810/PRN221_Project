@@ -90,6 +90,20 @@
 		</tbody>
 	</table>
 </div>
+@{
+    var prevDisabled = !Model.Products.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Products.HasNextPage ? "disabled" : "";
+}
+<a asp-page="./List"
+   asp-route-pageIndex="@(Model.Products.PageIndex - 1)"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./List"
+   asp-route-pageIndex="@(Model.Products.PageIndex + 1)"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
 <script>
     function submitForm() {
         document.querySelector('form').submit();
