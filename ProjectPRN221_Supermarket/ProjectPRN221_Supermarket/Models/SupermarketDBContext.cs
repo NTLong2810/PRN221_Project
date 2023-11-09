@@ -16,6 +16,8 @@ namespace ProjectPRN221_Supermarket.Models
         {
         }
 
+        public virtual DbSet<Cashier> Cashiers { get; set; }
+        public virtual DbSet<CashierLogin> CashierLogins { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<PurchaseOrder> PurchaseOrders { get; set; }
@@ -28,13 +30,43 @@ namespace ProjectPRN221_Supermarket.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-				var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-				optionsBuilder.UseSqlServer(config.GetConnectionString("MyDB"));
-			}
+                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                optionsBuilder.UseSqlServer(config.GetConnectionString("MyDB"));
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Cashier>(entity =>
+            {
+                entity.Property(e => e.CashierId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("CashierID");
+
+                entity.Property(e => e.CashierName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.CashierNavigation)
+                    .WithOne(p => p.Cashier)
+                    .HasForeignKey<Cashier>(d => d.CashierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Cashiers_CashierLogin");
+            });
+
+            modelBuilder.Entity<CashierLogin>(entity =>
+            {
+                entity.ToTable("CashierLogin");
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.ToTable("Category");
@@ -115,7 +147,16 @@ namespace ProjectPRN221_Supermarket.Models
 
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
+                entity.Property(e => e.CashierId).HasColumnName("CashierID");
+
                 entity.Property(e => e.OrderDate).HasColumnType("date");
+
+                entity.Property(e => e.TotalAmount).HasColumnType("decimal(10, 2)");
+
+                entity.HasOne(d => d.Cashier)
+                    .WithMany(p => p.SalesOrders)
+                    .HasForeignKey(d => d.CashierId)
+                    .HasConstraintName("FK_SalesOrders_Cashiers");
             });
 
             modelBuilder.Entity<SalesOrderItem>(entity =>

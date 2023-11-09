@@ -44,16 +44,16 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         {
             Categories = _context.Categories.ToList();
             Suppliers = _context.Suppliers.ToList();
-			// Create the product
-			int randomMonths = new Random().Next(3, 6);
-			ExpirationDate = DateTime.Now.AddMonths(randomMonths);
+            // Create the product
+            int randomMonths = new Random().Next(3, 6);
+            ExpirationDate = DateTime.Now.AddMonths(randomMonths);
 
-			// Tạo sản phẩm
-			Product.ExpirationDate = ExpirationDate;
-			_productRepository.AddProduct(Product);
+            // Tạo sản phẩm
+            Product.ExpirationDate = ExpirationDate;
+            _productRepository.AddProduct(Product);
 
-			// Create the purchase order
-			PurchaseOrder purchaseOrder = new PurchaseOrder
+            // Create the purchase order
+            PurchaseOrder purchaseOrder = new PurchaseOrder
             {
                 SupplierId = SelectedSupplier,
                 OrderDate = DateTime.Now, // You may want to set the order date accordingly.

@@ -37,6 +37,7 @@
     .search-right {
         margin-left: auto;
     }
+
 </style>
 <div>
 	<h2>List of Products</h2>
@@ -71,6 +72,7 @@
                 <th>Warning</th>
 				<th>Category</th>
                 <th>Action</th>
+                <th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -89,7 +91,14 @@
                         <a asp-page="/Products/Edit" asp-route-id="@product.ProductId">Edit</a> |
                         <a asp-page="/Products/Delete" asp-route-id="@product.ProductId">Delete</a>
                 </td>
-
+                    <td>
+                        <form method="post" asp-page-handler="AddToCart">
+                            <input type="hidden" name="productId" value="@product.ProductId" />
+                            <input type="hidden" name="productName" value="@product.ProductName" />
+                            <input type="hidden" name="price" value="@product.UnitPrice" />
+                            <button type="submit">Add to Cart</button>
+                        </form>
+                    </td>
 			</tr>
 		}
 		</tbody>
@@ -114,3 +123,40 @@
         document.querySelector('form').submit();
     }
 </script>
+<h1>Sale</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Product Id</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.CartItems)
+        {
+            <tr>
+                <td>@item.ProductItem.ProductId</td>
+                <td>@item.ProductItem.ProductName</td>
+                <td>@item.Quantity</td>
+                <td>@item.ProductItem.UnitPrice</td>
+                <td>
+                    <form method="post" asp-page-handler="AddToCart">
+                        <input type="hidden" name="productId" value="@item.ProductItem.ProductId" />
+                        <input type="hidden" name="productName" value="@item.ProductItem.ProductName" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="price" value="@item.ProductItem.UnitPrice" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form method="post" asp-page-handler="ClearCart">
+    <button type="submit">Clear Cart</button>
+</form>
+<form method="post" asp-page-handler="CreateOrder">
+    <button type="submit">Place Order</button>
+</form>
