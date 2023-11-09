@@ -33,14 +33,20 @@
                 <tr>
                     <th>Order Date</th>
                     <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Sales Price</th>
+                    <th>Total Price</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var saleOrderItem in Model.SalesOrderItems)
                 {
                     <tr>
-                        <td>@saleOrderItem.Order.OrderDate.ToShortDateString()</td>
+                        <td>@saleOrderItem.Order.OrderDate</td>
                         <td>@saleOrderItem.Product.ProductName</td>
+                        <td>@saleOrderItem.Quantity</td>
+                        <td>@saleOrderItem.UnitPrice</td>
+                        <td>@(saleOrderItem.UnitPrice * saleOrderItem.Quantity)</td>
                     </tr>
                 }
             </tbody>

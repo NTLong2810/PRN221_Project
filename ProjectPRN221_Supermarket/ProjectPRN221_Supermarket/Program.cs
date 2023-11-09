@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddTransient<IProductRepository, ProductRepository>().AddDbContext<SupermarketDBContext>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
+builder.Services.AddDbContext<SupermarketDBContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

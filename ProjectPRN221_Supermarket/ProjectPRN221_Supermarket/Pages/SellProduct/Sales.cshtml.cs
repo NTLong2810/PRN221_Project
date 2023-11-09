@@ -27,7 +27,7 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
 
         public void OnGet()
         {
-            Products = _productRepository.GetAllProducts();
+            Products = (List<Product>)_productRepository.GetAllProducts();
             SalesOrderItems = _salesOrderRepository.GetSalesOrderItems();
         }
 
@@ -39,7 +39,7 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
                 return RedirectToPage();
             }
 
-            Products = _productRepository.GetAllProducts();
+            Products = (List<Product>)_productRepository.GetAllProducts();
             SalesOrderItems = _salesOrderRepository.GetSalesOrderItems();
             return Page();
         }
