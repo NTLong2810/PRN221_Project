@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProjectPRN221_Supermarket.Repository
 {
-    public class SalesOrderRepository: ISalesOrderRepository
+    public class SalesOrderRepository : ISalesOrderRepository
     {
         private readonly SupermarketDBContext _context;
 

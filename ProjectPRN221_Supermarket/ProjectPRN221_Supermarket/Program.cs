@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN221_Supermarket.Models;
 using ProjectPRN221_Supermarket.Repository;
+using ProjectPRN221_Supermarket.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<CartService>();
 builder.Services.AddDbContext<SupermarketDBContext>();
 var app = builder.Build();
 

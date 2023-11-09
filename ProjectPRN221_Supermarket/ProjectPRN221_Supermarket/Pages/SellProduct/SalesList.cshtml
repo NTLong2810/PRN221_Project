@@ -1,0 +1,45 @@
+﻿@page
+@model ProjectPRN221_Supermarket.Pages.SellProduct.SalesListModel
+@{
+}
+<h1>Sales List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Total Amount</th>
+            <th>Order Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Sale)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.OrderDate</td>
+                <td>@order.TotalAmount</td>
+                <td>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var orderDetail in order.SalesOrderItems)
+                            {
+                                <tr>
+                                    <td>@orderDetail.Product.ProductName</td>
+                                    <td>@orderDetail.Quantity</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
