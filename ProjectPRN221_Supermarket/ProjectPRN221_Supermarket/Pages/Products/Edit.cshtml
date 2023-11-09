@@ -5,7 +5,6 @@
 }
 
 <h2>Edit Product</h2>
-
 <form method="post">
     <input type="hidden" asp-for="Product.ProductId" />
     
@@ -17,18 +16,14 @@
     <div class="form-group">
         <label asp-for="Product.UnitPrice" class="control-label"></label>
         <input asp-for="Product.UnitPrice" class="form-control" />
+        <span asp-validation-for="Product.UnitPrice" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Product.QuantityInStock" class="control-label"></label>
         <input asp-for="Product.QuantityInStock" class="form-control" />
+        <span asp-validation-for="Product.QuantityInStock" class="text-danger"></span>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Product.ExpirationDate" class="control-label"></label>
-        <input asp-for="Product.ExpirationDate" class="form-control" type="date" />
-    </div>
-
     <div class="form-group">
         <label asp-for="Product.Category" class="control-label"></label>
         <select asp-for="Product.CategoryId" class="form-control">

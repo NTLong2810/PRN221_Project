@@ -34,9 +34,47 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         public IActionResult OnPost()
         {
 
-             _productRepository.UpdateProduct(Product);
-            Categories = _context.Categories.ToList();
-            return RedirectToPage("List");
-        }
+			if (ModelState.IsValid)
+			{
+				// Load the original product and related purchase order item from the database
+				var originalProduct = _context.Products
+					.Include(p => p.PurchaseOrderItems)
+					.FirstOrDefault(p => p.ProductId == Product.ProductId);
+
+				if (originalProduct == null)
+				{
+					return RedirectToPage("List");
+				}
+
+				// Check and update UnitPrice
+				if (Product.UnitPrice < originalProduct.PurchaseOrderItems.Sum(poi => poi.UnitPrice))
+				{
+					ModelState.AddModelError("Product.UnitPrice", "UnitPrice cannot be less than the total UnitPrice of related PurchaseOrderItems.");
+					Categories = _context.Categories.ToList();
+					return Page();
+				}
+
+				// Check and update QuantityInStock
+				if (Product.QuantityInStock > originalProduct.PurchaseOrderItems.Sum(poi => poi.Quantity))
+				{
+					ModelState.AddModelError("Product.QuantityInStock", "QuantityInStock cannot be greater than the total Quantity of related PurchaseOrderItems.");
+					Categories = _context.Categories.ToList();
+					return Page();
+				}
+
+				// Update the product
+				originalProduct.ProductName = Product.ProductName;
+				originalProduct.UnitPrice = Product.UnitPrice;
+				originalProduct.QuantityInStock = Product.QuantityInStock;
+				originalProduct.CategoryId = Product.CategoryId;
+
+				_context.SaveChanges();
+
+				return RedirectToPage("List");
+			}
+
+			Categories = _context.Categories.ToList();
+			return Page();
+		}
     }
 }
