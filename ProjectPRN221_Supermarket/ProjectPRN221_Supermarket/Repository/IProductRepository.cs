@@ -9,5 +9,6 @@ namespace ProjectPRN221_Supermarket.Repository
         public Product GetProductById(int productId);
         public void DeleteProduct(int productId);
         public void UpdateProduct(Product product);
+        IEnumerable<Product> GetExpiringProducts(int daysBeforeExpiration);
     }
 }

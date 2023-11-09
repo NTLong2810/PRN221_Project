@@ -41,6 +41,13 @@ namespace ProjectPRN221_Supermarket.Repository
             _context.Products.Update(product);
             _context.SaveChanges();
         }
+        public IEnumerable<Product> GetExpiringProducts(int daysBeforeExpiration)
+        {
+            DateTime expirationDateThreshold = DateTime.Now.AddDays(daysBeforeExpiration);
+            return _context.Products
+                .Where(p => p.ExpirationDate != null && p.ExpirationDate <= expirationDateThreshold)
+                .ToList();
+        }
 
     }
 }

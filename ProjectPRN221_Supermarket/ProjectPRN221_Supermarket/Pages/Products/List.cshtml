@@ -67,6 +67,8 @@
 				<th>Unit Price</th>
 				<th>Quantity</th>
 				<th>Expired Date</th>
+                <th>Days Left</th>
+                <th>Warning</th>
 				<th>Category</th>
                 <th>Action</th>
 			</tr>
@@ -80,6 +82,8 @@
 				<td> @product.UnitPrice</td>
 				<td> @product.QuantityInStock</td>
 				<td> @product.ExpirationDate?.ToString("dd/MM/yyyy")</td>
+                <td>@((product.ExpirationDate - DateTime.Now)?.Days)</td>
+                 <td>@((product.ExpirationDate - DateTime.Now)?.Days < 7 ? "Expiring Soon" : "")</td>
 				<td> @product.Category.CategoryName</td>
                 <td>
                         <a asp-page="/Products/Edit" asp-route-id="@product.ProductId">Edit</a> |

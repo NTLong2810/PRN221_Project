@@ -1,17 +1,20 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN221_Supermarket.Models;
 using ProjectPRN221_Supermarket.Pages.Paging;
+using ProjectPRN221_Supermarket.Repository;
 
 namespace ProjectPRN221_Supermarket.Pages.Products
 {
     public class ListModel : PageModel
     {
         private SupermarketDBContext _context;
-        public ListModel(SupermarketDBContext context)
+        private readonly IProductRepository _productRepository;
+        public ListModel(SupermarketDBContext context, IProductRepository productRepository)
         {
             _context = context;
+            _productRepository = productRepository;
         }
         [BindProperty]
         public PaginatedList<Product> Products { get; set; }
@@ -22,11 +25,12 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         [BindProperty(SupportsGet = true)]
         public int? categoryId { get; set; }
         public IList<Product> Product { get; set; } = default!;
+        public List<Product> ExpiringProducts { get; set; }
         public async Task OnGet(int? pageIndex)
         {
             var pageSize = 4; 
             IQueryable<Product> products = _context.Products.Include(c => c.Category).AsNoTracking();
-
+            products = products.OrderBy(p => p.ExpirationDate).ThenByDescending(p => p.QuantityInStock);
             Products = await PaginatedList<Product>.CreateAsync(
                 products, pageIndex ?? 1, pageSize);
             Categories = _context.Categories.ToList();
