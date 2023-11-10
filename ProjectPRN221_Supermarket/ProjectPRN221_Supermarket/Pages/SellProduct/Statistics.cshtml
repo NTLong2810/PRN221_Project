@@ -1,0 +1,91 @@
+﻿@page
+@model ProjectPRN221_Supermarket.Pages.SellProduct.StatisticsModel
+@{
+}
+
+<style>
+    h1, h2 {
+        color: #333;
+        font-family: 'Arial', sans-serif;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
+
+<h1>Statistics</h1>
+
+<h2>Total Revenue: @Model.TotalRevenue</h2>
+<h2>Total Profit: @Model.TotalProfit</h2>
+
+<h2>Almost Out of stock</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Quantity In Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.ExpiringProducts)
+        {
+            <tr>
+                <td>@product.ProductName</td>
+                <td>@product.QuantityInStock</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2>Best Selling Products</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Total Sales Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.BestSellingProducts)
+        {
+            <tr>
+                <td>@product.ProductName</td>
+                <td>@product.SalesOrderItems.Sum(oi => oi.Quantity)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2>Not Selling Products</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Product Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.NotSellingProducts)
+        {
+            <tr>
+                <td>@product.ProductName</td>
+            </tr>
+        }
+    </tbody>
+</table>
