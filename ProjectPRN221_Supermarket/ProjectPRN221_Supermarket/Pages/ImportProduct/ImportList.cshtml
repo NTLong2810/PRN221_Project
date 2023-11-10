@@ -1,7 +1,8 @@
 ﻿@page
-@model ProjectPRN221_Supermarket.Pages.SellProduct.SalesListModel
+@model ProjectPRN221_Supermarket.Pages.ImportProduct.ImportListModel
 @{
 }
+
 <style>
     table {
         width: 100%;
@@ -34,43 +35,46 @@
         background-color: #f2f2f2;
     }
 </style>
-<h1>Sales List</h1>
+
+<h1>Purchase List</h1>
 
 <table>
     <thead>
         <tr>
-            <th>Order ID</th>
+            <th>Order Id</th>
+            <th>Order Detail</th>
             <th>Order Date</th>
-            <th>Total Amount</th>
-            <th>Order Details</th>
+            <th>Supplier</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in Model.Sale)
+        @foreach (var order in Model.PurchaseOrder)
         {
             <tr>
                 <td>@order.OrderId</td>
-                <td>@order.OrderDate</td>
-                <td>@order.TotalAmount</td>
                 <td>
-                    <table>
+                    <table class="inner-table">
                         <thead>
                             <tr>
-                                <th class ="inner-th">Product Name</th>
+                                <th class="inner-th">Product Name</th>
                                 <th class="inner-th">Quantity</th>
+                                <th class="inner-th">Unit Price</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var orderDetail in order.SalesOrderItems)
+                            @foreach (var orderDetail in order.PurchaseOrderItems)
                             {
                                 <tr>
                                     <td class="inner-td">@orderDetail.Product.ProductName</td>
                                     <td class="inner-td">@orderDetail.Quantity</td>
+                                    <td class="inner-td">@orderDetail.UnitPrice</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </td>
+                <td>@order.OrderDate?.ToString("dd/MM/yyyy")</td>
+                <td>@order.Supplier.SupplierName</td>
             </tr>
         }
     </tbody>

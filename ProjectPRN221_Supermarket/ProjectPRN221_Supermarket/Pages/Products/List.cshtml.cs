@@ -33,7 +33,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         public async Task OnGet(int? pageIndex)
         {
             var pageSize = 4;
-            IQueryable<Product> products = _context.Products.Include(c => c.Category).AsNoTracking();
+            IQueryable<Product> products = _context.Products.Include(c => c.Category).Include(p => p.PurchaseOrderItems).AsNoTracking();
             products = products.OrderBy(p => p.ExpirationDate).ThenByDescending(p => p.QuantityInStock);
             Products = await PaginatedList<Product>.CreateAsync(
                 products, pageIndex ?? 1, pageSize);
@@ -107,7 +107,12 @@ namespace ProjectPRN221_Supermarket.Pages.Products
                     UnitPrice = cartItem.Quantity * cartItem.ProductItem.UnitPrice
                 };
                 _context.SalesOrderItems.Add(orderDetail);
-            }
+                var product = _context.Products.Find(cartItem.ProductItem.ProductId);
+                if (product != null)
+                {
+                    product.QuantityInStock -= cartItem.Quantity;
+                }
+        }
 
             _context.SaveChanges();
 
