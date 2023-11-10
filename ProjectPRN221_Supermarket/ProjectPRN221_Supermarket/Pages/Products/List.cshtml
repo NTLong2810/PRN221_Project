@@ -135,22 +135,29 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.CartItems)
+        @if (Model.CartItems != null)
         {
-            <tr>
-                <td>@item.ProductItem.ProductId</td>
-                <td>@item.ProductItem.ProductName</td>
-                <td>@item.Quantity</td>
-                <td>@item.ProductItem.UnitPrice</td>
-                <td>
-                    <form method="post" asp-page-handler="AddToCart">
-                        <input type="hidden" name="productId" value="@item.ProductItem.ProductId" />
-                        <input type="hidden" name="productName" value="@item.ProductItem.ProductName" />
-                        <input type="hidden" name="quantity" value="1" />
-                        <input type="hidden" name="price" value="@item.ProductItem.UnitPrice" />
-                    </form>
-                </td>
-            </tr>
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.ProductItem.ProductId</td>
+                    <td>@item.ProductItem.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.ProductItem.UnitPrice</td>
+                    <td>
+                        <form method="post" asp-page-handler="AddToCart">
+                            <input type="hidden" name="productId" value="@item.ProductItem.ProductId" />
+                            <input type="hidden" name="productName" value="@item.ProductItem.ProductName" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <input type="hidden" name="price" value="@item.ProductItem.UnitPrice" />
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <p>Cart is empty.</p>
         }
     </tbody>
 </table>

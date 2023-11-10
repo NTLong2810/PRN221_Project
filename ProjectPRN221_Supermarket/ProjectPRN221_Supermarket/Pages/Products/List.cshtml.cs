@@ -56,6 +56,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
 
             Products = await PaginatedList<Product>.CreateAsync(query, 1, 4);
             Categories = _context.Categories.ToList();
+            CartItems = _cartService.GetCart();
         }
         public IActionResult OnPostAddToCart(int productId, string productName, decimal price, int quantity)
         {
