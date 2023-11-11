@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN221_Supermarket.Models;
+using ProjectPRN221_Supermarket.Pages.Paging;
 
 namespace ProjectPRN221_Supermarket.Pages.SellProduct
 {
@@ -16,9 +17,10 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public List<SalesOrder> Sale { get; set; }
+        public PaginatedList<SalesOrder> Sales { get; set; }
+        public IList<SalesOrder> Sale { get; set; } = default!;
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet(int? pageIndex)
         {
             var cashierId = _httpContextAccessor.HttpContext.Session.GetString("CashierId");
 
@@ -28,10 +30,16 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
                 // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
                 return Redirect("/Login");
             }
-            Sale =  _context.SalesOrders
+            var pageSize = 4; // Số lượng mục trên mỗi trang
+            IQueryable<SalesOrder> saleQuery = _context.SalesOrders
                 .Include(o => o.SalesOrderItems)
                 .ThenInclude(od => od.Product)
-                .ToList();
+                .Include(o => o.Cashier)
+                .OrderByDescending(o => o.OrderDate).AsNoTracking();
+
+            Sales = await PaginatedList<SalesOrder>.CreateAsync(
+                saleQuery, pageIndex ?? 1, pageSize);
+
             return Page();
         }
     }

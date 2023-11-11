@@ -96,10 +96,25 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         }
         public IActionResult OnPostCreateOrder()
         {
+            var cashierId = _httpContextAccessor.HttpContext.Session.GetString("CashierId");
+
+            // Kiểm tra xem có thông tin người dùng trong phiên không
+            if (string.IsNullOrEmpty(cashierId))
+            {
+                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                return Redirect("/Login");
+            }
+
+            // Chuyển CashierId từ string sang int
+            if (!int.TryParse(cashierId, out int cashierIdInt))
+            {
+                return BadRequest("Invalid CashierId");
+            }
+
             CartItems = _cartService.GetCart();
             var order = new SalesOrder
             {
-                CashierId = 1,
+                CashierId = cashierIdInt,
                 OrderDate = DateTime.Now,
                 TotalAmount = CalculateTotalAmount(CartItems)
             };

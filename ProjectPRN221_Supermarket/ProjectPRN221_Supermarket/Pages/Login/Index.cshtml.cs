@@ -38,8 +38,11 @@ namespace ProjectPRN221_Supermarket.Pages.Login
                 }
                 else
                 {
+                    if (!ModelState.IsValid) { 
                     ModelState.AddModelError(string.Empty, "Invalid username or password");
+                    return Page();
                 }
+            }
             return Page();
         }
     }

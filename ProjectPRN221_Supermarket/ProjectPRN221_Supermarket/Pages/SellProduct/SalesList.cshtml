@@ -42,16 +42,18 @@
             <th>Order ID</th>
             <th>Order Date</th>
             <th>Total Amount</th>
+            <th>Cashier Name</th>
             <th>Order Details</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in Model.Sale)
+        @foreach (var order in Model.Sales)
         {
             <tr>
                 <td>@order.OrderId</td>
                 <td>@order.OrderDate</td>
                 <td>@order.TotalAmount</td>
+                <td>@order.Cashier.CashierName</td>
                 <td>
                     <table>
                         <thead>
@@ -75,3 +77,18 @@
         }
     </tbody>
 </table>
+@{
+    var prevDisabled = !Model.Sales.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Sales.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./SalesList"
+   asp-route-pageIndex="@(Model.Sales.PageIndex - 1)"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./SalesList"
+   asp-route-pageIndex="@(Model.Sales.PageIndex + 1)"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
