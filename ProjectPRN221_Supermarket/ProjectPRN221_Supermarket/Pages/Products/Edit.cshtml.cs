@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ProjectPRN221_Supermarket.Models;
@@ -10,10 +10,12 @@ namespace ProjectPRN221_Supermarket.Pages.Products
 	{
 		private readonly IProductRepository _productRepository;
 		SupermarketDBContext _context;
-		public EditModel(IProductRepository productRepository, SupermarketDBContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public EditModel(IProductRepository productRepository, SupermarketDBContext context, IHttpContextAccessor httpContextAccessor)
 		{
 			_productRepository = productRepository;
 			_context = context;
+			_httpContextAccessor = httpContextAccessor;
 		}
 
 		[BindProperty]
@@ -22,7 +24,15 @@ namespace ProjectPRN221_Supermarket.Pages.Products
 
 		public IActionResult OnGet(int id)
 		{
-			Product = _productRepository.GetProductById(id);
+            var cashierId = _httpContextAccessor.HttpContext.Session.GetString("CashierId");
+
+            // Kiểm tra xem có thông tin người dùng trong phiên không
+            if (string.IsNullOrEmpty(cashierId))
+            {
+                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                return Redirect("/Login");
+            }
+            Product = _productRepository.GetProductById(id);
 			if (Product == null)
 			{
 				return RedirectToPage("List");
@@ -34,7 +44,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
 		public IActionResult OnPost()
 		{
 
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid)
 			{
 				// Load the original product and related purchase order item from the database
 				var originalProduct = _context.Products

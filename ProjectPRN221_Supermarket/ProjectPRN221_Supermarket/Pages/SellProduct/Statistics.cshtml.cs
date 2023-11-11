@@ -8,10 +8,11 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
     public class StatisticsModel : PageModel
     {
         private readonly SupermarketDBContext _context;
-
-        public StatisticsModel(SupermarketDBContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public StatisticsModel(SupermarketDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public decimal TotalRevenue { get; set; }
@@ -20,8 +21,16 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
         public List<Product> BestSellingProducts { get; set; }
         public List<Product> NotSellingProducts { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            var cashierId = _httpContextAccessor.HttpContext.Session.GetString("CashierId");
+
+            // Kiểm tra xem có thông tin người dùng trong phiên không
+            if (string.IsNullOrEmpty(cashierId))
+            {
+                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                return Redirect("/Login");
+            }
             // Tính doanh thu và lợi nhuận
             CalculateRevenueAndProfit();
 
@@ -33,6 +42,7 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
 
             // Lấy danh sách sản phẩm không bán được
             GetNotSellingProducts();
+            return Page();
         }
 
         private void CalculateRevenueAndProfit()

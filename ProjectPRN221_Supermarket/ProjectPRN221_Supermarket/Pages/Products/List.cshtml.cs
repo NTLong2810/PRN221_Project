@@ -13,11 +13,13 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         private readonly CartService _cartService;
         private SupermarketDBContext _context;
         private readonly IProductRepository _productRepository;
-        public ListModel(SupermarketDBContext context, IProductRepository productRepository, CartService cartService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ListModel(SupermarketDBContext context, IProductRepository productRepository, CartService cartService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _productRepository = productRepository;
             _cartService = cartService;
+            _httpContextAccessor = httpContextAccessor;
         }
         [BindProperty]
         public PaginatedList<Product> Products { get; set; }
@@ -30,8 +32,16 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         public IList<Product> Product { get; set; } = default!;
         public List<Product> ExpiringProducts { get; set; }
         public List<CartItem> CartItems { get; set; }
-        public async Task OnGet(int? pageIndex)
+        public async Task<IActionResult> OnGet(int? pageIndex)
         {
+            var cashierId = _httpContextAccessor.HttpContext.Session.GetString("CashierId");
+
+            // Kiểm tra xem có thông tin người dùng trong phiên không
+            if (string.IsNullOrEmpty(cashierId))
+            {
+                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                return Redirect("/Login");
+            }
             var pageSize = 4;
             IQueryable<Product> products = _context.Products.Include(c => c.Category).Include(p => p.PurchaseOrderItems).AsNoTracking();
             products = products.OrderBy(p => p.ExpirationDate).ThenByDescending(p => p.QuantityInStock);
@@ -39,6 +49,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
                 products, pageIndex ?? 1, pageSize);
             Categories = _context.Categories.ToList();
             CartItems = _cartService.GetCart();
+            return Page();
         }
         public async Task OnPost(string productName, int? categoryId)
         {

@@ -12,11 +12,13 @@ namespace ProjectPRN221_Supermarket.Pages.Products
     {
         IProductRepository _productRepository;
         SupermarketDBContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AddModel(IProductRepository productRepository, SupermarketDBContext context)
+        public AddModel(IProductRepository productRepository, SupermarketDBContext context, IHttpContextAccessor httpContextAccessor)
         {
             _productRepository = productRepository;
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
@@ -34,10 +36,19 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         public List<Category> Categories { get; set; }
         public List<Supplier> Suppliers { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            var cashierId = _httpContextAccessor.HttpContext.Session.GetString("CashierId");
+
+            // Kiểm tra xem có thông tin người dùng trong phiên không
+            if (string.IsNullOrEmpty(cashierId))
+            {
+                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                return Redirect("/Login");
+            }
             Categories = _context.Categories.ToList();
-            Suppliers = _context.Suppliers.ToList();
+            Suppliers = _context.Suppliers.ToList(); 
+            return Page();
         }
 
         public IActionResult OnPost()

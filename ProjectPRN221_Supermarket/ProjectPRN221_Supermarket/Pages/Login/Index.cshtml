@@ -1,0 +1,19 @@
+﻿@page
+@model ProjectPRN221_Supermarket.Pages.Login.IndexModel
+@{
+}
+<h1>Login</h1>
+
+<form method="post">
+    <div>
+        <label for="Username">Username:</label>
+        <input type="text" id="Username" name="Username" asp-for="Credentials.Username" />
+        <span asp-validation-for="Credentials.Username" class="text-danger"></span>
+    </div>
+    <div>
+        <label for="Password">Password:</label>
+        <input type="password" id="Password" name="Password" asp-for="Credentials.Password" />
+        <span asp-validation-for="Credentials.Password" class="text-danger"></span>
+    </div>
+    <button type="submit">Login</button>
+</form>
