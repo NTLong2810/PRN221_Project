@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
+using ProjectPRN221_Supermarket.Hubs;
 using ProjectPRN221_Supermarket.Models;
 using ProjectPRN221_Supermarket.Repository;
 
@@ -9,10 +11,12 @@ namespace ProjectPRN221_Supermarket.Pages.Products
     {
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public DeleteModel(IProductRepository productRepository, IHttpContextAccessor httpContextAccessor)
+        private readonly IHubContext<HubServer> _hubContext;
+        public DeleteModel(IProductRepository productRepository, IHttpContextAccessor httpContextAccessor, IHubContext<HubServer> hubContext)
         {
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -38,6 +42,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         public IActionResult OnPost()
         {
             _productRepository.DeleteProduct(Product.ProductId);
+            _hubContext.Clients.All.SendAsync("ReceiveChangeProduct");
             return RedirectToPage("List");
         }
     }

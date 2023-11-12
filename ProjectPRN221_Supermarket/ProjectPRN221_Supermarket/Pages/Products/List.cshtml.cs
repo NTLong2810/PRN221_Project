@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ProjectPRN221_Supermarket.Hubs;
 using ProjectPRN221_Supermarket.Models;
 using ProjectPRN221_Supermarket.Pages.Paging;
 using ProjectPRN221_Supermarket.Repository;
@@ -14,12 +16,14 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         private SupermarketDBContext _context;
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public ListModel(SupermarketDBContext context, IProductRepository productRepository, CartService cartService, IHttpContextAccessor httpContextAccessor)
+        private readonly IHubContext<HubServer> _hubContext;
+        public ListModel(SupermarketDBContext context, IProductRepository productRepository, CartService cartService, IHttpContextAccessor httpContextAccessor, IHubContext<HubServer> hubContext)
         {
             _context = context;
             _productRepository = productRepository;
             _cartService = cartService;
             _httpContextAccessor = httpContextAccessor;
+            _hubContext = hubContext;
         }
         [BindProperty]
         public PaginatedList<Product> Products { get; set; }
@@ -71,16 +75,42 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         }
         public IActionResult OnPostAddToCart(int productId, string productName, decimal price, int quantity)
         {
+            // Lấy thông tin sản phẩm từ cơ sở dữ liệu
+            var product = _context.Products.Find(productId);
+            CartItems = _cartService.GetCart();
+            // Kiểm tra nếu sản phẩm không tồn tại
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             // Thêm sản phẩm vào giỏ hàng
-            var p = new Product
+            var cartProduct = new Product
             {
                 ProductId = productId,
                 ProductName = productName,
                 UnitPrice = price,
                 QuantityInStock = quantity,
             };
+            var totalQuantityInCart = CartItems
+         .Where(item => item.ProductItem.ProductId == productId)
+         .Sum(item => item.Quantity);
 
-            _cartService.AddToCart(p);
+            if (totalQuantityInCart >= product.QuantityInStock)
+            {
+                TempData["OutOfStockMessage"] = $"Quantity exceeds the available stock for product '{productName}'.";
+                _hubContext.Clients.All.SendAsync("ReceiveOutOfStockMessage", TempData["OutOfStockMessage"]);
+                return RedirectToPage("/Products/List");
+            }
+
+            if (product.QuantityInStock <= 0)
+            {
+                TempData["OutOfStockMessage"] = $"Product '{cartProduct.ProductName}' is out of stock.";
+                _hubContext.Clients.All.SendAsync("ReceiveOutOfStockMessage", TempData["OutOfStockMessage"]);
+                return RedirectToPage("/Products/List");
+            }
+
+            _cartService.AddToCart(cartProduct);
 
             // Chuyển hướng về trang giỏ hàng
             return RedirectToPage("/Products/List");
@@ -125,6 +155,13 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             // Tạo chi tiết đơn hàng (OrderDetail) cho từng sản phẩm trong giỏ hàng
             foreach (var cartItem in CartItems)
             {
+                // Giảm số lượng tồn kho chỉ nếu sản phẩm có sẵn
+                var product = _context.Products.Find(cartItem.ProductItem.ProductId);
+                if (product != null)
+                {
+                    product.QuantityInStock -= cartItem.Quantity;
+                }
+
                 var orderDetail = new SalesOrderItem
                 {
                     OrderId = order.OrderId,
@@ -133,17 +170,12 @@ namespace ProjectPRN221_Supermarket.Pages.Products
                     UnitPrice = cartItem.Quantity * cartItem.ProductItem.UnitPrice
                 };
                 _context.SalesOrderItems.Add(orderDetail);
-                var product = _context.Products.Find(cartItem.ProductItem.ProductId);
-                if (product != null)
-                {
-                    product.QuantityInStock -= cartItem.Quantity;
-                }
-        }
+            }
 
             _context.SaveChanges();
-
             // Xóa sản phẩm khỏi giỏ hàng sau khi tạo đơn hàng
             _cartService.ClearCart();
+            _hubContext.Clients.All.SendAsync("ReceiveSalesUpdate");
             return RedirectToPage("/SellProduct/SalesList");
         }
 

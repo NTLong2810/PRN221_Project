@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
+using ProjectPRN221_Supermarket.Hubs;
 using ProjectPRN221_Supermarket.Models;
 using ProjectPRN221_Supermarket.Repository;
 using System;
@@ -13,12 +15,14 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         IProductRepository _productRepository;
         SupermarketDBContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHubContext<HubServer> _hubContext;
 
-        public AddModel(IProductRepository productRepository, SupermarketDBContext context, IHttpContextAccessor httpContextAccessor)
+        public AddModel(IProductRepository productRepository, SupermarketDBContext context, IHttpContextAccessor httpContextAccessor, IHubContext<HubServer> hubContext)
         {
             _productRepository = productRepository;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -83,8 +87,9 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             _context.PurchaseOrderItems.Add(purchaseOrderItem);
 
             // Save changes to the database
+        
             _context.SaveChanges();
-
+            _hubContext.Clients.All.SendAsync("ReceiveChangeProduct");
             return RedirectToPage("List");
         }
     }

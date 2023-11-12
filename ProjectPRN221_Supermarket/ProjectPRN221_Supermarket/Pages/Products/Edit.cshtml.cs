@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ProjectPRN221_Supermarket.Hubs;
 using ProjectPRN221_Supermarket.Models;
 using ProjectPRN221_Supermarket.Repository;
 
@@ -11,11 +13,13 @@ namespace ProjectPRN221_Supermarket.Pages.Products
 		private readonly IProductRepository _productRepository;
 		SupermarketDBContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public EditModel(IProductRepository productRepository, SupermarketDBContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly IHubContext<HubServer> _hubContext;
+        public EditModel(IProductRepository productRepository, SupermarketDBContext context, IHttpContextAccessor httpContextAccessor, IHubContext<HubServer> hubContext)
 		{
 			_productRepository = productRepository;
 			_context = context;
 			_httpContextAccessor = httpContextAccessor;
+			_hubContext = hubContext;
 		}
 
 		[BindProperty]
@@ -79,8 +83,8 @@ namespace ProjectPRN221_Supermarket.Pages.Products
 				originalProduct.CategoryId = Product.CategoryId;
 
 				_context.SaveChanges();
-
-				return RedirectToPage("List");
+                _hubContext.Clients.All.SendAsync("ReceiveChangeProduct");
+                return RedirectToPage("List");
 			}
 
 			Categories = _context.Categories.ToList();

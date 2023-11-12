@@ -9,7 +9,6 @@ namespace ProjectPRN221_Supermarket.Pages.Login
     {
         private readonly AuthService _authService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         [BindProperty]
         public CashierLogin Credentials { get; set; }
 
@@ -34,7 +33,7 @@ namespace ProjectPRN221_Supermarket.Pages.Login
                     // Lưu thông tin người dùng vào phiên làm việc
                     _httpContextAccessor.HttpContext.Session.SetString("CashierId", cashier.Id.ToString());
 
-                    return Redirect("/Index");
+                return Redirect("/Index");
                 }
                 else
                 {
