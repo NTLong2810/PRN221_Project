@@ -65,7 +65,8 @@
 			<tr>
 				<th>Id</th>
 				<th>Name</th>
-				<th>Unit Price</th>
+				<th>Sales Unit Price</th>
+                <th>Import Unit Price</th>
 				<th>Quantity</th>
 				<th>Expired Date</th>
                 <th>Days Left</th>
@@ -82,6 +83,7 @@
 				<td> @product.ProductId</td>
 				<td> @product.ProductName</td>
 				<td> @product.UnitPrice</td>
+                 <td>@product.PurchaseOrderItems.FirstOrDefault()?.UnitPrice</td>
 				<td> @product.QuantityInStock</td>
 				<td> @product.ExpirationDate?.ToString("dd/MM/yyyy")</td>
                 <td>@((product.ExpirationDate - DateTime.Now)?.Days)</td>

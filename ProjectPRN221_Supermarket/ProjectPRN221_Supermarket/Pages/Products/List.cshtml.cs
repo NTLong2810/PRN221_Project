@@ -75,6 +75,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
         }
         public IActionResult OnPostAddToCart(int productId, string productName, decimal price, int quantity)
         {
+               var cashierId = int.Parse(_httpContextAccessor.HttpContext.Session.GetString("CashierId"));
             // Lấy thông tin sản phẩm từ cơ sở dữ liệu
             var product = _context.Products.Find(productId);
             CartItems = _cartService.GetCart();
@@ -110,7 +111,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
                 return RedirectToPage("/Products/List");
             }
 
-            _cartService.AddToCart(cartProduct);
+            _cartService.AddToCart(cashierId, cartProduct);
 
             // Chuyển hướng về trang giỏ hàng
             return RedirectToPage("/Products/List");
@@ -142,6 +143,19 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             }
 
             CartItems = _cartService.GetCart();
+
+            // Kiểm tra xem có sản phẩm trong giỏ hàng hết hàng không
+            foreach (var cartItem in CartItems)
+            {
+                var product = _context.Products.Find(cartItem.ProductItem.ProductId);
+                if (product != null && product.QuantityInStock < cartItem.Quantity)
+                {
+                    // Nếu có ít nhất một sản phẩm trong giỏ hàng hết hàng, thông báo và không tạo đơn hàng
+                    TempData["OutOfStockMessage"] = $"Product '{cartItem.ProductItem.ProductName}' is out of stock.";
+                    _hubContext.Clients.All.SendAsync("ReceiveOutOfStockMessage", TempData["OutOfStockMessage"]);
+                    return RedirectToPage("/Products/List");
+                }
+            }
             var order = new SalesOrder
             {
                 CashierId = cashierIdInt,
