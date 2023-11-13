@@ -27,7 +27,6 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
             // Kiểm tra xem có thông tin người dùng trong phiên không
             if (string.IsNullOrEmpty(cashierId))
             {
-                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
                 return Redirect("/Login");
             }
             var pageSize = 4; // Số lượng mục trên mỗi trang

@@ -28,7 +28,6 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
             // Kiểm tra xem có thông tin người dùng trong phiên không
             if (string.IsNullOrEmpty(cashierId))
             {
-                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
                 return Redirect("/Login");
             }
             // Tính doanh thu và lợi nhuận
@@ -57,9 +56,9 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
         {
             // Lấy danh sách sản phẩm bán được cùng với giá nhập ban đầu của từng sản phẩm
             var soldProducts = _context.SalesOrderItems
-     .Include(oi => oi.Product)
-     .Where(oi => oi.Quantity > 0) // Chỉ xem xét sản phẩm với số lượng bán dương
-     .ToList();
+            .Include(oi => oi.Product)
+             .Where(oi => oi.Quantity > 0) 
+            .ToList();
 
             decimal totalProfit = (decimal)soldProducts.Sum(oi =>
             {
@@ -81,7 +80,7 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
         }
         private void GetExpiringProducts()
         {
-            // Lấy danh sách sản phẩm sắp hết (ví dụ: sắp hết là khi còn dưới 10 sản phẩm)
+            // Lấy danh sách sản phẩm sắp hết (ví dụ: sắp hết là khi còn dưới 30 sản phẩm)
             ExpiringProducts = _context.Products
                 .Where(p => p.QuantityInStock < 30)
                 .OrderBy(p => p.QuantityInStock)
@@ -92,7 +91,7 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
         {
             // Lấy danh sách sản phẩm bán chạy (ví dụ: 5 sản phẩm có doanh số bán nhiều nhất)
             BestSellingProducts = _context.Products
-        .Include(p => p.SalesOrderItems) // Thêm Include để đảm bảo SalesOrderItems được load
+        .Include(p => p.SalesOrderItems) 
         .OrderByDescending(p => p.SalesOrderItems.Sum(oi => oi.Quantity))
         .Take(5)
         .ToList();
@@ -102,7 +101,7 @@ namespace ProjectPRN221_Supermarket.Pages.SellProduct
         {
             // Lấy danh sách sản phẩm không bán được (ví dụ: các sản phẩm có số lượng bán là 0)
             NotSellingProducts = _context.Products
-            .Include(p => p.SalesOrderItems) // Thêm Include để đảm bảo SalesOrderItems được load
+            .Include(p => p.SalesOrderItems) 
             .Where(p => p.SalesOrderItems.Sum(oi => oi.Quantity) == 0)
             .ToList();
         }
