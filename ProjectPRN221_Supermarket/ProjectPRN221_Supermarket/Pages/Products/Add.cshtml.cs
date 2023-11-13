@@ -47,7 +47,6 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             // Kiểm tra xem có thông tin người dùng trong phiên không
             if (string.IsNullOrEmpty(cashierId))
             {
-                // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
                 return Redirect("/Login");
             }
             Categories = _context.Categories.ToList();
@@ -71,7 +70,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             PurchaseOrder purchaseOrder = new PurchaseOrder
             {
                 SupplierId = SelectedSupplier,
-                OrderDate = DateTime.Now, // You may want to set the order date accordingly.
+                OrderDate = DateTime.Now, 
             };
             _context.PurchaseOrders.Add(purchaseOrder);
             _context.SaveChanges();
@@ -81,7 +80,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             {
                 OrderId = purchaseOrder.OrderId,
                 ProductId = Product.ProductId,
-                Quantity = Product.QuantityInStock, // Assuming you want to use the product's quantity.
+                Quantity = Product.QuantityInStock, 
                 UnitPrice = PurchaseOrderUnitPrice,
             };
             _context.PurchaseOrderItems.Add(purchaseOrderItem);

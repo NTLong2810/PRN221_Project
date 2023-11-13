@@ -32,6 +32,11 @@ namespace ProjectPRN221_Supermarket.Repository
             var product = _context.Products.Find(productId);
             if (product != null)
             {
+                var purchaseOrderItems = _context.PurchaseOrderItems.Where(item => item.ProductId == productId);
+                var salesOrderItems = _context.SalesOrderItems.Where(item => item.ProductId == productId);
+
+                _context.PurchaseOrderItems.RemoveRange(purchaseOrderItems);
+                _context.SalesOrderItems.RemoveRange(salesOrderItems);
                 _context.Products.Remove(product);
                 _context.SaveChanges();
             }
