@@ -73,7 +73,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             Categories = _context.Categories.ToList();
             CartItems = _cartService.GetCart();
         }
-        public IActionResult OnPostAddToCart(int productId, string productName, decimal price, int quantity)
+        public IActionResult OnPostAddToCart(int productId, string productName, decimal price, int quantity, int? pageIndex)
         {
                var cashierId = int.Parse(_httpContextAccessor.HttpContext.Session.GetString("CashierId"));
             // Lấy thông tin sản phẩm từ cơ sở dữ liệu
@@ -114,7 +114,7 @@ namespace ProjectPRN221_Supermarket.Pages.Products
             _cartService.AddToCart(cashierId, cartProduct);
 
             // Chuyển hướng về trang giỏ hàng
-            return RedirectToPage("/Products/List");
+            return RedirectToPage("/Products/List", new { pageIndex });
         }
 
         public IActionResult OnPostClearCart()
